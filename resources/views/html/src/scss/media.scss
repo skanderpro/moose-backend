@@ -1,0 +1,112 @@
+@media (max-width: 1024px) {
+  .container {
+    padding: 0px 15px;
+  }
+  .header__inner-nav ul li a {
+    font-size: 12px;
+    line-height: 15px;
+  }
+  .header__inner-nav ul li + li {
+    margin-left: 20px;
+  }
+  .g-title{
+    font-size: 30px;
+    line-height: 35px;
+
+  }
+}
+@media (max-width: 768px) {
+  .form{
+    padding: 20px;
+  }
+  .g-input{
+    padding: 12px 12px;
+  }
+  .leaderboard__inner-list tr:first-child td:first-child{
+    font-size: 16px;
+    line-height: 18px;
+  }
+  .leaderboard__inner-list tr:first-child td:last-child{
+    font-size: 22px;
+    line-height: 24px;
+  }
+  .leaderboard__inner-list tbody tr td:first-child{
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .leaderboard__inner-list tbody tr td:last-child{
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .leaderboard__inner-list thead tr th{
+    font-size: 18px;
+    line-height: 22px;
+  }
+  .g-title{
+    font-size: 25px;
+    line-height: 30px;
+
+  }
+  .header__inner-nav {
+    display: flex;
+    position: fixed;
+    background-color: $blue;
+    left: 0;
+    justify-content: center;
+    top: 0;
+    width: 100%;
+    height: 0%;
+    padding: 80px 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(0px, -100%);
+  }
+  body.hiden {
+    overflow: hidden;
+  }
+  .header__inner-nav.active {
+    transform: translate(0px, 0px);
+    transition: all 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+    height: 100%;
+    z-index: 2;
+  }
+  .header__inner-nav ul {
+    flex-direction: column;
+    margin: auto 0;
+  }
+  .header__inner-burger-btn {
+    display: block;
+    position: relative;
+    z-index: 3;
+  }
+  .header__inner-nav ul li + li {
+    margin-left: 0px;
+    margin-top: 30px;
+  }
+
+  .header__inner-burger-btn.active span {
+    transform: scale(0) translate(0px, -50%);
+  }
+  .header__inner-burger-btn.active::before {
+    top: 48%;
+    transform: rotate(-45deg) translate(0px, -50%);
+  }
+  .header__inner-burger-btn.active::after {
+    bottom: 49%;
+    transform: rotate(45deg) translate(0px, 50%);
+  }
+}
+@media (max-width: 500px) {
+  .g-title{
+    font-size: 20px;
+    line-height: 25px;
+
+  }
+  .header__inner-logo img {
+    width: 200px;
+  }
+}
