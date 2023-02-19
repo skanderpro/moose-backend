@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\ScoresController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,3 +23,8 @@ Route::get('/', function () {
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
+
+Auth::routes();
+
+Route::get('/', [ScoresController::class, 'index'])->name('scores');
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');

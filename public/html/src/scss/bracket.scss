@@ -50,12 +50,17 @@
   }
 }
 
-.team div.score {
-  font-size: 0px;
-  width: 0px !important;
-  padding: 2px 0px !important;
-  display: none;
+div.jQBracket .team {
+    display: flex;
+    flex-direction: row-reverse;
 }
+
+//.team div.score {
+//  font-size: 0px;
+//  width: 0px !important;
+//  padding: 2px 0px !important;
+//  display: none;
+//}
 .team div.label {
   position: relative !important;
   display: flex;
