@@ -23,6 +23,11 @@ class Season extends Model
         return $this->hasMany(Game::class)->orderBy('id', 'asc');
     }
 
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'season_teams');
+    }
+
     public static function getActive()
     {
         return static::where('is_active', true)->orderBy('start', 'desc')->first();
@@ -40,5 +45,10 @@ class Season extends Model
         }
 
         return $json;
+    }
+
+    public function meta()
+    {
+        return $this->hasMany(SeasonTeam::class)->with('team');
     }
 }

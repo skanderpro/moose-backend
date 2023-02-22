@@ -12,20 +12,28 @@ class Guess extends Model
     protected $fillable = [
         'season_id',
         'user_id',
-        'results',
+        'results_left',
+        'results_right',
+        'results_final',
     ];
 
-    public function getResults()
+    public function getResults(string $type)
     {
-        $json = json_decode($this->results, true);
+        $value = $this->{'results_' . $type};
+        if (empty($value)) {
+            return [];
+        }
+
+        $json = json_decode($value, true);
         if (!is_array($json)) {
-            $json = [
-                'left' => [],
-                'right' => [],
-                'final' => [],
-            ];
+            $json = [];
         }
 
         return $json;
+    }
+
+    public static function getForUser(Season $season, User $user)
+    {
+        return static::where('season_id', $season->id)->where('user_id', $user->id)->first();
     }
 }

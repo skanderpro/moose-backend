@@ -30,14 +30,15 @@
 
                 <nav class="header__inner-nav">
                     <ul>
-                        <li><a href="{{ route('scores') }}">Scores</a></li>
-                        <li><a href="{{ route('leaderboard') }}">LEADERS</a></li>
                         @guest
+                            <li><a href="{{ route('leaderboard') }}">LEADERS</a></li>
                             <li><a href="{{ route('login') }}">LOGIN</a></li>
                             <li>
                                 <a class="nav-btn-registration" href="{{ route('register') }}">REGISTRATION</a>
                             </li>
                         @else
+                            <li><a href="{{ route('scores') }}">Scores</a></li>
+                            <li><a href="{{ route('leaderboard') }}">LEADERS</a></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf

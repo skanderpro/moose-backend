@@ -37,23 +37,35 @@
         });
     </script>
     <script type="text/javascript">
+        const userId = {{ \Illuminate\Support\Facades\Auth::id() }};
+        const isCurrentSeason = {{NOW()->isAfter($season->start) ? 'false' : 'true'}};
+        const save = (type) => !isCurrentSeason ? undefined : (data) => {
+            fetch('{{ route("scores.store", ["seasons" => $season]) }}', {
+                method: 'post',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify({
+                    type,
+                    results: data.results
+                })
+            })
+        };
+
         var finalData = {
             teams: [],
-            results: [],
+            results: {!! json_encode($final) !!},
         };
         var saveData1 = {
             teams: {!! json_encode($games_right) !!},
 
-            results: [
-
-            ],
+            results: {!! json_encode($right) !!},
         };
         var saveData = {
             teams: {!! json_encode($games_left) !!},
 
-            results: [
-
-            ],
+            results: {!! json_encode($left) !!},
         };
         /* Called whenever bracket is modified
          *
@@ -74,21 +86,7 @@
 
         /*for flag*/
         /* Edit function is called when team label is clicked */
-        function edit_fn(container, data, doneCb) {
-            // var input = $('<input type="text">');
-            // input.val(data ? data.flag + ":" + data.name : "");
-            // container.html(input);
-            // input.focus();
-            // input.blur(function () {
-            //     var inputValue = input.val();
-            //     if (inputValue.length === 0) {
-            //         doneCb(null); // Drop the team and replace with BYE
-            //     } else {
-            //         var flagAndName = inputValue.split(":"); // Expects correct input
-            //         doneCb({ flag: flagAndName[0], name: flagAndName[1] });
-            //     }
-            // });
-        }
+        function edit_fn(container, data, doneCb) {}
 
         /* Render function is called for each team label when data is changed, data
          * contains the data object given in init and belonging to this slot.
@@ -113,7 +111,6 @@
                 case "entry-default-win":
                 case "entry-complete":
                     container
-                        // .append(`<div class="team-score">${score}</div>`)
                         .append(`<span class="team-name">${data.name}</span>`);
                     return;
             }
@@ -128,7 +125,7 @@
                 disableHighlight: true,
                 skipConsolationRound: true,
                 init: saveData,
-                save: console.log,
+                save: userId ? save('left') : undefined,
                 decorator: {
                     edit() {},
                     render: render_fn
@@ -145,7 +142,7 @@
                 disableHighlight: true,
                 skipConsolationRound: true,
                 init: saveData1,
-                save: console.log,
+                save: userId ? save('right') : undefined,
                 decorator: {
                     edit() {},
                     render: render_fn
@@ -161,7 +158,7 @@
                 centerConnectors: true,
                 disableHighlight: true,
                 init: finalData,
-                save: console.log,
+                save: userId ? save('final') : undefined,
                 decorator: {
                     edit() {},
                     render: render_fn

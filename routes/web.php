@@ -15,16 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
 Route::group(['prefix' => 'admin'], function () {
+    Route::get('/seasons/{season}/results', [\App\Http\Controllers\Voyager\SeasonController::class, 'results'])->name('voyager.seasons.results');
     Voyager::routes();
 });
 
 Auth::routes();
 
-Route::get('/', [ScoresController::class, 'index'])->name('scores');
+Route::middleware(['auth'])->group(function () {
+    Route::post('/score/{seasons}/store', [ScoresController::class, 'store'])->name('scores.store');
+    Route::get('/', [ScoresController::class, 'index'])->name('scores');
+});
+
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
