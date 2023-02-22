@@ -5,18 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Team extends Model
+class SeasonTeam extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'score',
-        'logo',
+        'team_id',
+        'season_id',
+        'group',
+        'rating',
     ];
 
-    public function seasons()
+    public function team()
     {
-        return $this->belongsToMany(Season::class, 'season_teams');
+        return $this->belongsTo(Team::class);
     }
 }
