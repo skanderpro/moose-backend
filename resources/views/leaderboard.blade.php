@@ -15,182 +15,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-1.jpg"
-                                        alt=""
-                                    />
-                                    Guy Hawkins
-                                </td>
-                                <td>280</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-2.jpg"
-                                        alt=""
-                                    />
-                                    Devon Lane
-                                </td>
-                                <td>213</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-3.jpg"
-                                        alt=""
-                                    />
-                                    Darlene Robertson
-                                </td>
-                                <td>135</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-4.jpg"
-                                        alt=""
-                                    />
-                                    Eleanor Pena
-                                </td>
-                                <td>25</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-1.jpg"
-                                        alt=""
-                                    />
-                                    Guy Hawkins
-                                </td>
-                                <td>280</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-2.jpg"
-                                        alt=""
-                                    />
-                                    Devon Lane
-                                </td>
-                                <td>213</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-3.jpg"
-                                        alt=""
-                                    />
-                                    Darlene Robertson
-                                </td>
-                                <td>135</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-4.jpg"
-                                        alt=""
-                                    />
-                                    Eleanor Pena
-                                </td>
-                                <td>25</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-1.jpg"
-                                        alt=""
-                                    />
-                                    Guy Hawkins
-                                </td>
-                                <td>280</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-2.jpg"
-                                        alt=""
-                                    />
-                                    Devon Lane
-                                </td>
-                                <td>213</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-3.jpg"
-                                        alt=""
-                                    />
-                                    Darlene Robertson
-                                </td>
-                                <td>135</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-4.jpg"
-                                        alt=""
-                                    />
-                                    Eleanor Pena
-                                </td>
-                                <td>25</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-1.jpg"
-                                        alt=""
-                                    />
-                                    Guy Hawkins
-                                </td>
-                                <td>280</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-2.jpg"
-                                        alt=""
-                                    />
-                                    Devon Lane
-                                </td>
-                                <td>213</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-3.jpg"
-                                        alt=""
-                                    />
-                                    Darlene Robertson
-                                </td>
-                                <td>135</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img
-                                        class="leaderboard__inner-list-img"
-                                        src="img/leaderboard-img-4.jpg"
-                                        alt=""
-                                    />
-                                    Eleanor Pena
-                                </td>
-                                <td>25</td>
-                            </tr>
+                            @foreach($users as $user)
+                                <tr>
+                                    <td>
+                                        <img
+                                            class="leaderboard__inner-list-img"
+                                            src="img/leaderboard-img-1.jpg"
+                                            alt=""
+                                        />
+                                    {{ $user->name }}
+                                    </td>
+                                    <td>{{ $user->score }}</td>
+                                </tr>
+                            @endforeach
 
                             </tbody>
                         </table>

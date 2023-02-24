@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ScoresController;
+use App\Http\Controllers\Voyager\SeasonController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,14 +17,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix' => 'admin'], function () {
-    Route::get('/seasons/{season}/results', [\App\Http\Controllers\Voyager\SeasonController::class, 'results'])->name('voyager.seasons.results');
+    Route::get('/seasons/{season}/results', [SeasonController::class, 'results'])->name('voyager.seasons.results');
+    Route::post('/seasons/{season}/results', [SeasonController::class, 'storeResults'])->name('voyager.seasons.store-results');
+    Route::post('/seasons/{season}/recalculate', [SeasonController::class, 'runRecalculateJob'])->name('voyager.seasons.recalculate');
     Voyager::routes();
 });
 
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('/score/{seasons}/store', [ScoresController::class, 'store'])->name('scores.store');
+    Route::post('/score/{season}/store', [ScoresController::class, 'store'])->name('scores.store');
     Route::get('/', [ScoresController::class, 'index'])->name('scores');
 });
 

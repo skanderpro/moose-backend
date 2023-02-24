@@ -13,5 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         '/score/*/store',
+        '/admin/seasons/*/results',
+        '/admin/seasons/*/recalculate'
     ];
 }

@@ -18,6 +18,11 @@ class Season extends Model
         'results_final',
     ];
 
+    public function guesses()
+    {
+        return $this->hasMany(Guess::class);
+    }
+
     public function games()
     {
         return $this->hasMany(Game::class)->orderBy('id', 'asc');
@@ -33,15 +38,16 @@ class Season extends Model
         return static::where('is_active', true)->orderBy('start', 'desc')->first();
     }
 
-    public function getResults()
+    public function getResults(string $type)
     {
-        $json = json_decode($this->results, true);
+        $value = $this->{'results_' . $type};
+        if (empty($value)) {
+            return [];
+        }
+
+        $json = json_decode($value, true);
         if (!is_array($json)) {
-            $json = [
-                'left' => [],
-                'right' => [],
-                'final' => [],
-            ];
+            $json = [];
         }
 
         return $json;

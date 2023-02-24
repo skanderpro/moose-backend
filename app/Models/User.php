@@ -21,6 +21,7 @@ class User extends \TCG\Voyager\Models\User
         'name',
         'email',
         'password',
+        'score',
     ];
 
     /**
@@ -41,4 +42,21 @@ class User extends \TCG\Voyager\Models\User
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function guesses()
+    {
+        return $this->hasMany(Guess::class);
+    }
+
+    public function recalculateScore()
+    {
+        $score = 0;
+
+        foreach ($this->guesses as $guess) {
+            $score += $guess->score;
+        }
+
+        $this->score = $score;
+        $this->save();
+    }
 }

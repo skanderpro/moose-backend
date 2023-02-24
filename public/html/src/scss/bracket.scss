@@ -109,6 +109,11 @@ div.jQBracket .team {
 div.jQBracket .team.lose {
   color: #7f7f7f;
 }
+
+div.jQBracket .tools {
+    display: none;
+}
+
 div.jQBracket .team.win {
   color: $black;
 }
