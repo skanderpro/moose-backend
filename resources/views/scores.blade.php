@@ -40,7 +40,7 @@
         const userId = {{ \Illuminate\Support\Facades\Auth::id() }};
         const isCurrentSeason = {{NOW()->isAfter($season->start) ? 'false' : 'true'}};
         const save = (type) => !isCurrentSeason ? undefined : (data) => {
-            fetch('{{ route("scores.store", ["seasons" => $season]) }}', {
+            fetch('{{ route("scores.store", ["season" => $season]) }}', {
                 method: 'post',
                 credentials: 'include',
                 headers: {
@@ -111,7 +111,7 @@
                 case "entry-default-win":
                 case "entry-complete":
                     container
-                        .append(`<span class="team-name">${data.name}</span>`);
+                        .append(`<span class="team-name">(${data.rating}) ${data.name}</span>`);
                     return;
             }
         }

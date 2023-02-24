@@ -19,4 +19,13 @@ class Team extends Model
     {
         return $this->belongsToMany(Season::class, 'season_teams');
     }
+
+    public static function findForSeason($id, Season $season)
+    {
+        $entity = static::find($id);
+        $seasonTema = SeasonTeam::where('season_id', $season->id)->where('team_id', $entity->id)->first();
+        $entity->rating = $seasonTema->rating;
+
+        return $entity;
+    }
 }

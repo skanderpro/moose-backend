@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longText('results_left');
             $table->longText('results_right');
             $table->longText('results_final');
+            $table->integer('score');
             $table->timestamps();
         });
     }

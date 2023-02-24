@@ -24,10 +24,10 @@ class ScoresController extends Controller
         $games = $season->games->groupBy('type');
         $guess = Guess::getForUser($season, Auth::user());
 
-        $teamMapper = fn($game) => [Team::find($game->first_team_id), Team::find($game->second_team_id)];
+        $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
 
         return view('scores', [
-            'seasons' => $season,
+            'season' => $season,
             'games_left' => $games['left']->map($teamMapper)->toArray(),
             'games_right' => $games['right']->map($teamMapper)->toArray(),
             'left' => $guess ? $guess->getResults('left') : [],

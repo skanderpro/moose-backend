@@ -4,9 +4,16 @@ namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Game;
+use App\Models\Guess;
 use App\Models\Season;
+use App\Models\Team;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use TCG\Voyager\Events\BreadDataAdded;
 use TCG\Voyager\Events\BreadDataUpdated;
 use TCG\Voyager\Facades\Voyager;
@@ -149,8 +156,49 @@ class SeasonController extends VoyagerBaseController
 
     public function results(Season $season)
     {
+        /** @var Collection $games */
+        $games = $season->games->groupBy('type');
+
+        $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
+
         return Voyager::view('voyager::seasons.results', [
             'season' => $season,
+            'games_left' => $games['left']->map($teamMapper)->toArray(),
+            'games_right' => $games['right']->map($teamMapper)->toArray(),
+            'left' => $season->getResults('left'),
+            'right' => $season->getResults('right'),
+            'final' => $season->getResults('final'),
         ]);
+    }
+
+    public function storeResults(Request $request, Season $season)
+    {
+        try {
+            $payload = Validator::make($request->request->all(), [
+                'type' => 'required|in:left,right,final',
+                'results' => 'required|array',
+            ])->validate();
+
+            $user = Auth::user();
+
+            $season->{"results_" . trim($payload['type'])} = json_encode($payload['results']);
+            $season->save();
+
+            return response()->json([], Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    public function runRecalculateJob(Season $season)
+    {
+        $guesses = $season->guesses;
+
+        foreach ($guesses as $guess) {
+            $guess->calculateScore($season);
+            $guess->user->recalculateScore();
+        }
+
+        return response()->json([]);
     }
 }

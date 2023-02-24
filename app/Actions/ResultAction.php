@@ -36,7 +36,7 @@ class ResultAction extends AbstractAction
     public function getDefaultRoute()
     {
         return route('voyager.seasons.results', [
-            'seasons' => $this->data,
+            'season' => $this->data,
         ]);
     }
 }
