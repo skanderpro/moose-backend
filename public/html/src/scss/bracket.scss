@@ -110,6 +110,14 @@ div.jQBracket .team.lose {
   color: #7f7f7f;
 }
 
+div.jQBracket .score {
+    opacity: 0;
+}
+
+div.jQBracket .score input {
+ appearance: none;
+}
+
 div.jQBracket .tools {
     display: none;
 }
