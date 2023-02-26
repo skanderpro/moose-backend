@@ -182,7 +182,7 @@
                 init: finalData,
                 save: userId ? save('final') : undefined,
                 decorator: {
-                    edit() {},
+                    edit: edit_fn,
                     render: render_fn
                 },
             });
