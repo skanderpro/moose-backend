@@ -105,8 +105,9 @@
             const $team = $container.closest('.team');
             const $opponent = $team.prev('.team').length ? $team.prev('.team') : $team.next('.team');
             const $teamScore = $team.find('.score').data('resultid');
+            const $wrapper = $team.closest('.jQBracket');
 
-            triggerNewScore($opponent, 0, 'opponent').then(() => triggerNewScore($('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'));
+            triggerNewScore($opponent, 0, 'opponent').then(() => triggerNewScore($wrapper.find('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'));
 
         }
 

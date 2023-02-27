@@ -120,9 +120,32 @@
                */
         }
 
+        function triggerNewScore($team, score, tag) {
+            return new Promise(resolve => {
+                const $score = $team.find('.score');
+                $score[0].click();
+
+                setTimeout(() => {
+                    const $input = $score.find('input');
+                    $input.val(score);
+                    $input[0].blur();
+
+                    setTimeout(() => resolve(true), 100);
+                }, 100);
+            });
+        }
+
         /*for flag*/
         /* Edit function is called when team label is clicked */
-        function edit_fn(container, data, doneCb) {}
+        function edit_fn($container, data, doneCb) {
+            const $team = $container.closest('.team');
+            const $opponent = $team.prev('.team').length ? $team.prev('.team') : $team.next('.team');
+            const $teamScore = $team.find('.score').data('resultid');
+            const $wrapper = $team.closest('.jQBracket');
+
+            triggerNewScore($opponent, 0, 'opponent').then(() => triggerNewScore($wrapper.find('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'));
+
+        }
 
         /* Render function is called for each team label when data is changed, data
          * contains the data object given in init and belonging to this slot.
@@ -163,7 +186,7 @@
                 init: saveData,
                 save: userId ? save('left') : undefined,
                 decorator: {
-                    edit() {},
+                    edit: edit_fn,
                     render: render_fn
                 },
             });
@@ -180,7 +203,7 @@
                 init: saveData1,
                 save: userId ? save('right') : undefined,
                 decorator: {
-                    edit() {},
+                    edit: edit_fn,
                     render: render_fn
                 },
             });
@@ -196,7 +219,7 @@
                 init: finalData,
                 save: userId ? save('final') : undefined,
                 decorator: {
-                    edit() {},
+                    edit: edit_fn,
                     render: render_fn
                 },
             });
