@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Guess extends Model
 {
@@ -98,10 +99,10 @@ class Guess extends Model
                     }
 
                     if (
-                        $guessResult[0] == null ||
-                        $guessResult[1] == null ||
-                        $result[0] == null ||
-                        $result[1] == null
+                        $guessResult[0] === null ||
+                        $guessResult[1] === null ||
+                        $result[0] === null ||
+                        $result[1] === null
                     ) {
                         continue;
                     } elseif (
@@ -133,10 +134,10 @@ class Guess extends Model
                     }
 
                     if (
-                        $guessResult[0] == null ||
-                        $guessResult[1] == null ||
-                        $result[0] == null ||
-                        $result[1] == null
+                        $guessResult[0] === null ||
+                        $guessResult[1] === null ||
+                        $result[0] === null ||
+                        $result[1] === null
                     ) {
                         continue;
                     } elseif (
