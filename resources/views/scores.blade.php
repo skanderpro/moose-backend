@@ -53,10 +53,8 @@
             })
         };
 
-        var finalData = {
-            teams: [],
-            results: {!! json_encode($final) !!},
-        };
+        var teamsRegistry = {};
+        var finalResult = {!! json_encode($final) !!};
         var saveData1 = {
             teams: {!! json_encode($games_right) !!},
 
@@ -107,7 +105,9 @@
             const $teamScore = $team.find('.score').data('resultid');
             const $wrapper = $team.closest('.jQBracket');
 
-            triggerNewScore($opponent, 0, 'opponent').then(() => triggerNewScore($wrapper.find('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'));
+            triggerNewScore($opponent, 0, 'opponent')
+                .then(() => triggerNewScore($wrapper.find('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'))
+                .then(() => renderFinal());
 
         }
 
@@ -122,6 +122,9 @@
          * - entry-complete: Data and score available
          */
         function render_fn(container, data, score, state) {
+            if (data) {
+                teamsRegistry[data.id] = data;
+            }
             switch (state) {
                 case "empty-bye":
                     container.append("No team");
@@ -134,7 +137,7 @@
                 case "entry-default-win":
                 case "entry-complete":
                     container
-                        .append(`<span class="team-name">(${data.rating}) ${data.name}</span>`);
+                        .append(`<span class="team-name" data-team="${data.id}">(${data.rating}) ${data.name}</span>`);
                     return;
             }
         }
@@ -172,22 +175,38 @@
                 },
             });
         });
-        $(function () {
-            $("div#final .demo").bracket({
-                dir: "rl",
-                teamWidth: 150,
-                matchMargin: 10,
-                roundMargin: 0,
-                centerConnectors: true,
-                disableHighlight: true,
-                init: finalData,
-                save: userId ? save('final') : undefined,
-                decorator: {
-                    edit: edit_fn,
-                    render: render_fn
-                },
+        function renderFinal () {
+            $(() => {
+                const $final = $("div#final .demo");
+                const leftWinner = document.querySelector('#save .round:last-of-type .win [data-team]');
+                const rightWinner = document.querySelector('#save1 .round:last-of-type .win [data-team]');
+                const leftTeam = leftWinner && teamsRegistry[+leftWinner.dataset.team] ? teamsRegistry[+leftWinner.dataset.team] : null;
+                const rightTeam = rightWinner && teamsRegistry[+rightWinner.dataset.team] ? teamsRegistry[+rightWinner.dataset.team] : null;
+
+                setTimeout(() => {
+                    $final.bracket({
+                        dir: "rl",
+                        teamWidth: 150,
+                        matchMargin: 10,
+                        roundMargin: 0,
+                        centerConnectors: true,
+                        disableHighlight: true,
+                        init: {
+                            teams : [
+                                [leftTeam, rightTeam], /* first matchup */
+                            ],
+                            results : finalResult,
+                        },
+                        save: userId ? save('final') : undefined,
+                        decorator: {
+                            edit: edit_fn,
+                            render: render_fn
+                        },
+                    });
+                }, 500);
             });
-        });
+        }
+        renderFinal();
     </script>
     <script>
         var angleScale = {
