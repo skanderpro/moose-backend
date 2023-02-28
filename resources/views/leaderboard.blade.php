@@ -20,7 +20,7 @@
                                     <td>
                                         <img
                                             class="leaderboard__inner-list-img"
-                                            src="img/leaderboard-img-1.jpg"
+                                            src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=Snuggles"
                                             alt=""
                                         />
                                     {{ $user->name }}
