@@ -9,6 +9,9 @@ use App\Models\Season;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +24,7 @@ use TCG\Voyager\Http\Controllers\VoyagerBaseController;
 
 class SeasonController extends VoyagerBaseController
 {
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     protected function activeCheck($season)
     {
         if (!$season->is_active) {
@@ -190,7 +194,7 @@ class SeasonController extends VoyagerBaseController
         }
     }
 
-    public function runRecalculateJob(Season $season)
+    protected function recalculateScores(Season $season)
     {
         $guesses = $season->guesses;
 
@@ -198,7 +202,24 @@ class SeasonController extends VoyagerBaseController
             $guess->calculateScore($season);
             $guess->user->recalculateScore();
         }
+    }
+
+    public function runRecalculateJob(Season $season)
+    {
+        $this->recalculateScores($season);
 
         return response()->json([]);
+    }
+
+    public function resetSeason(Season $season)
+    {
+        $season->results_left = '[]';
+        $season->results_right = '[]';
+        $season->results_final = '[]';
+        $season->save();
+
+        $this->recalculateScores($season);
+
+        return back();
     }
 }

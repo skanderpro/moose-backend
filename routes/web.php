@@ -20,6 +20,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/seasons/{season}/results', [SeasonController::class, 'results'])->name('voyager.seasons.results');
     Route::post('/seasons/{season}/results', [SeasonController::class, 'storeResults'])->name('voyager.seasons.store-results');
     Route::post('/seasons/{season}/recalculate', [SeasonController::class, 'runRecalculateJob'])->name('voyager.seasons.recalculate');
+    Route::get('/seasons/{season}/reset', [SeasonController::class, 'resetSeason'])->name('voyager.seasons.reset');
     Voyager::routes();
 });
 
