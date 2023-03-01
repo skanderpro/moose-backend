@@ -19,24 +19,46 @@ class ScoresController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        $season = Season::getActive();
+        $guess = Guess::getForUser($season, $user);
+        if (!$guess) {
+            $guess = Guess::create([
+                'season_id' => $season->id,
+                'user_id' => $user->id,
+                'results_left' => '[]',
+                'results_right' => '[]',
+                'results_final' => '[]',
+            ]);
+        }
+
+        return redirect()->route('scores.variant', [
+            'guess' => $guess,
+        ]);
+    }
+
+    public function variant(Guess $guess)
+    {
         $season = Season::getActive();
         /** @var Collection $games */
         $games = $season->games->groupBy('type');
-        $guess = Guess::getForUser($season, Auth::user());
+        $guesses = Guess::getListForUser($season, Auth::user());
 
         $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
 
         return view('scores', [
             'season' => $season,
+            'guesses' => $guesses,
+            'currentGuess' => $guess,
             'games_left' => $games['left']->map($teamMapper)->toArray(),
             'games_right' => $games['right']->map($teamMapper)->toArray(),
-            'left' => $guess ? $guess->getResults('left') : [],
-            'right' => $guess ? $guess->getResults('right') : [],
-            'final' => $guess ? $guess->getResults('final') : [],
+            'left' => $guess->getResults('left'),
+            'right' => $guess->getResults('right'),
+            'final' => $guess->getResults('final'),
         ]);
     }
 
-    public function store(Request $request, Season $season)
+    public function store(Request $request, Season $season, Guess $guess)
     {
         if (NOW()->isAfter($season->start)) {
             return response()->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -48,18 +70,6 @@ class ScoresController extends Controller
                 'results' => 'required|array',
             ])->validate();
 
-            $user = Auth::user();
-            $guess = Guess::getForUser($season, $user);
-            if (!$guess) {
-                $guess = Guess::create([
-                    'season_id' => $season->id,
-                    'user_id' => $user->id,
-                    'results_left' => '[]',
-                    'results_right' => '[]',
-                    'results_final' => '[]',
-                ]);
-            }
-
             $guess->{"results_" . trim($payload['type'])} = json_encode($payload['results']);
             $guess->save();
 
@@ -67,5 +77,22 @@ class ScoresController extends Controller
         } catch (ValidationException $e) {
             return response()->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function createGuess()
+    {
+        $user = Auth::user();
+        $season = Season::getActive();
+        $guess = Guess::create([
+            'season_id' => $season->id,
+            'user_id' => $user->id,
+            'results_left' => '[]',
+            'results_right' => '[]',
+            'results_final' => '[]',
+        ]);
+
+        return redirect()->route('scores.variant', [
+            'guess' => $guess,
+        ]);
     }
 }

@@ -41,7 +41,12 @@ class Guess extends Model
 
     public static function getForUser(Season $season, User $user)
     {
-        return static::where('season_id', $season->id)->where('user_id', $user->id)->first();
+        return static::where('season_id', $season->id)->where('user_id', $user->id)->orderBy('id', 'desc')->first();
+    }
+
+    public static function getListForUser(Season $season, User $user)
+    {
+        return static::where('season_id', $season->id)->where('user_id', $user->id)->get();
     }
 
     protected function calculateGuessScore($rating, $level)
@@ -154,5 +159,10 @@ class Guess extends Model
 
         $this->score = $score;
         $this->save();
+    }
+
+    public static function removeSeason(Season $season)
+    {
+        return static::where('season_id', $season->id)->delete();
     }
 }

@@ -218,6 +218,8 @@ class SeasonController extends VoyagerBaseController
         $season->results_final = '[]';
         $season->save();
 
+        Guess::removeSeason($season);
+
         $this->recalculateScores($season);
 
         return back();

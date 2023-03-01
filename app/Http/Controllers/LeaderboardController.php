@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guess;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -11,7 +12,7 @@ class LeaderboardController extends Controller
 {
     public function index()
     {
-        $users = User::where('score', '>', 0)->orderBy('score', 'desc')->get();
+        $guesses = Guess::where('score', '>', 0)->with('user')->orderBy('score', 'desc')->get();
 
         $avatars = [
             'Leo',
@@ -31,7 +32,7 @@ class LeaderboardController extends Controller
         ];
 
         return view('leaderboard', [
-            'users' => $users,
+            'guesses' => $guesses,
             'avatars' => $avatars,
         ]);
     }

@@ -1,0 +1,39 @@
+.variants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+
+    .g-title {
+        margin: 0;
+        font-size: 28px;
+        text-align: left;
+    }
+
+    ul {
+        list-style-type: initial;
+        margin: 0;
+        padding-left: 20px;
+
+        li {
+            list-style-type: initial;
+        }
+    }
+
+    button {
+        background-color: #f7ed1d;
+        padding: 10px;
+        color: #28446d;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 20px;
+        text-transform: uppercase;
+        transition: all .3s ease;
+
+        &:hover {
+            background-color: #fff;
+            color: #28446d;
+        }
+    }
+}
