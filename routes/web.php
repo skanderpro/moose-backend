@@ -27,7 +27,9 @@ Route::group(['prefix' => 'admin'], function () {
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('/score/{season}/store', [ScoresController::class, 'store'])->name('scores.store');
+    Route::post('/score/{season}/{guess}/store', [ScoresController::class, 'store'])->name('scores.store');
+    Route::get('/{guess}/variant', [ScoresController::class, 'variant'])->name('scores.variant');
+    Route::post('/variant/create', [ScoresController::class, 'createGuess'])->name('scores.variant.create');
     Route::get('/', [ScoresController::class, 'index'])->name('scores');
 });
 

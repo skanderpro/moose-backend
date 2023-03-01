@@ -10,6 +10,11 @@
         <div class="tournament-bracket-wrapper">
             <div class="container">
                 <h1 class="g-title">{{ $season ? $season->title : '' }}</h1>
+                @if(NOW()->isAfter($season->start))
+                    <div class="season-end">
+                        Season was finished. You can not make your guesses anymore.
+                    </div>
+                @endif
                 <div id="gesture-area">
                     <div id="scale-element" class="tournament-bracket" >
                         <div id="save"></div>
@@ -18,6 +23,30 @@
                         </div>
                         <div id="save1"></div>
                     </div>
+                </div>
+
+                <div class="variants-list">
+                    <h3 class="g-title">Scores variants</h3>
+                    <ul>
+                        @foreach($guesses as $guess)
+                            <li>
+                                @if($guess->id == $currentGuess->id)
+                                    Variant from {{ $guess->created_at }}
+                                @else
+                                    <a href="{{ route('scores.variant', ['guess' => $guess]) }}">
+                                        Variant from {{ $guess->created_at }}
+                                    </a>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    @if(!NOW()->isAfter($season->start))
+                        <form action="{{ route('scores.variant.create') }}" method="post">
+                            @csrf
+                            <button type="submit">Create variant</button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
@@ -40,7 +69,7 @@
         const userId = {{ \Illuminate\Support\Facades\Auth::id() }};
         const isCurrentSeason = {{NOW()->isAfter($season->start) ? 'false' : 'true'}};
         const save = (type) => !isCurrentSeason ? undefined : (data) => {
-            fetch('{{ route("scores.store", ["season" => $season]) }}', {
+            fetch('{{ route("scores.store", ["season" => $season, 'guess' => $currentGuess]) }}', {
                 method: 'post',
                 credentials: 'include',
                 headers: {
