@@ -44,13 +44,13 @@ body {
   ul li a:hover {
     color: $yellow;
   }
-  ul li a.nav-btn-registration {
+  ul li .nav-btn-registration {
     background-color: $yellow;
     padding: 10px;
     color: $blue;
     border-radius: 10px;
   }
-  ul li a.nav-btn-registration:hover {
+  ul li .nav-btn-registration:hover {
     background-color: $white;
     color: $blue;
   }

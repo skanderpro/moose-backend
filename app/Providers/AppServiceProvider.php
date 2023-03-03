@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Actions\ResetAction;
+use App\Actions\ResultAction;
+use App\FormFields\TeamsGroups;
 use Illuminate\Support\ServiceProvider;
 use TCG\Voyager\Facades\Voyager;
 
@@ -24,7 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Voyager::addAction(\App\Actions\ResultAction::class);
-        Voyager::addAction(\App\Actions\ResetAction::class);
+        Voyager::addAction(ResultAction::class);
+        Voyager::addAction(ResetAction::class);
+        Voyager::addFormField(TeamsGroups::class);
     }
 }

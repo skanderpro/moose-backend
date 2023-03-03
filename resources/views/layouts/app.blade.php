@@ -42,7 +42,7 @@
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button>LOG OUT</button>
+                                    <button class="nav-btn-registration">LOG OUT</button>
                                 </form>
                             </li>
                         @endguest

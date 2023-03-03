@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Game;
 use App\Models\Guess;
 use App\Models\Season;
+use App\Models\SeasonTeam;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,35 +26,23 @@ use TCG\Voyager\Http\Controllers\VoyagerBaseController;
 class SeasonController extends VoyagerBaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    protected function activeCheck($season)
-    {
-        if (!$season->is_active) {
-            $firstSeason = Season::first();
-            $firstSeason->is_active = true;
-            $firstSeason->save();
-        }
-
-        $activeSeason = Season::where('is_active', true)->whereNot('id', $season->id)->first();
-        if ($activeSeason) {
-            $activeSeason->is_active = true;
-            $activeSeason->save();
-        }
-    }
-
     protected function combineTeams($season)
     {
-        $gamesCount = $season->games()->count();
-        if ($gamesCount > 0) {
-            return;
-        }
-
+        Game::query()->delete();
         $teams = $season->meta->groupBy('group');
         $j = 0;
         foreach ($teams as $teamGroup) {
-            for ($i = 0; $i < count($teamGroup) / 2; $i++) {
+            $mid = count($teamGroup) / 2;
+            for ($i = 0; $i < count($teamGroup) / 4; $i++) {
                 Game::create([
                     'first_team_id' => $teamGroup[$i]->team->id,
                     'second_team_id' => $teamGroup[count($teamGroup) - $i - 1]->team->id,
+                    'season_id' => $season->id,
+                    'type' => $j % 2 ? 'right' : 'left',
+                ]);
+                Game::create([
+                    'first_team_id' => $teamGroup[$mid - $i - 1]->team->id,
+                    'second_team_id' => $teamGroup[$mid + $i]->team->id,
                     'season_id' => $season->id,
                     'type' => $j % 2 ? 'right' : 'left',
                 ]);
@@ -103,8 +92,21 @@ class SeasonController extends VoyagerBaseController
         // Delete Images
         $this->deleteBreadImages($original_data, $to_remove);
 
-        $this->activeCheck($data);
-        $this->combineTeams($data);
+        SeasonTeam::query()->delete();
+        $sts = $request->get('teams_groups');
+
+        foreach ($sts as $group => $ids) {
+            foreach ($ids as $rating => $id) {
+                SeasonTeam::create([
+                    'team_id' => $id,
+                    'season_id' => $data->id,
+                    'rating' => $rating + 1,
+                    'group' => $group,
+                ]);
+            }
+        }
+
+
 
         event(new BreadDataUpdated($dataType, $data));
 
@@ -118,44 +120,6 @@ class SeasonController extends VoyagerBaseController
             'message'    => __('voyager::generic.successfully_updated')." {$dataType->getTranslatedAttribute('display_name_singular')}",
             'alert-type' => 'success',
         ]);
-    }
-
-    /**
-     * POST BRE(A)D - Store data.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(Request $request)
-    {
-        $slug = $this->getSlug($request);
-
-        $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
-
-        // Check permission
-        $this->authorize('add', app($dataType->model_name));
-
-        // Validate fields with ajax
-        $val = $this->validateBread($request->all(), $dataType->addRows)->validate();
-        $data = $this->insertUpdateData($request, $slug, $dataType->addRows, new $dataType->model_name());
-
-        event(new BreadDataAdded($dataType, $data));
-
-        if (!$request->has('_tagging')) {
-            if (auth()->user()->can('browse', $data)) {
-                $redirect = redirect()->route("voyager.{$dataType->slug}.index");
-            } else {
-                $redirect = redirect()->back();
-            }
-
-            return $redirect->with([
-                'message'    => __('voyager::generic.successfully_added_new')." {$dataType->getTranslatedAttribute('display_name_singular')}",
-                'alert-type' => 'success',
-            ]);
-        } else {
-            return response()->json(['success' => true, 'data' => $data]);
-        }
     }
 
     public function results(Season $season)
@@ -219,6 +183,8 @@ class SeasonController extends VoyagerBaseController
         $season->save();
 
         Guess::removeSeason($season);
+
+        $this->combineTeams($season);
 
         $this->recalculateScores($season);
 
