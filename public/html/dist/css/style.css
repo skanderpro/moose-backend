@@ -345,14 +345,14 @@ body {
   color: #f7ed1d;
 }
 
-.header__inner-nav ul li a.nav-btn-registration {
+.header__inner-nav ul li .nav-btn-registration {
   background-color: #f7ed1d;
   padding: 10px;
   color: #28446d;
   border-radius: 10px;
 }
 
-.header__inner-nav ul li a.nav-btn-registration:hover {
+.header__inner-nav ul li .nav-btn-registration:hover {
   background-color: #fff;
   color: #28446d;
 }
