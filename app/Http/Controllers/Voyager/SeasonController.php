@@ -118,14 +118,23 @@ class SeasonController extends VoyagerBaseController
     public function results(Season $season)
     {
         /** @var Collection $games */
-        $games = $season->games->groupBy('type');
+        $games = $season->games->groupBy('group');
 
         $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
 
+        $left = array_merge(
+            array_values(empty($games['group_a']) ? [] : $games['group_a']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values(empty($games['group_b']) ? [] : $games['group_b']->sortBy('sort_index')->map($teamMapper)->toArray())
+        );
+        $right = array_merge(
+            array_values(empty($games['group_c']) ? [] : $games['group_c']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values(empty($games['group_d']) ? [] : $games['group_d']->sortBy('sort_index')->map($teamMapper)->toArray())
+        );
+
         return Voyager::view('voyager::seasons.results', [
             'season' => $season,
-            'games_left' => $games['left']->map($teamMapper)->toArray(),
-            'games_right' => $games['right']->map($teamMapper)->toArray(),
+            'games_left' => $left,
+            'games_right' => $right,
             'left' => $season->getResults('left'),
             'right' => $season->getResults('right'),
             'final' => $season->getResults('final'),
