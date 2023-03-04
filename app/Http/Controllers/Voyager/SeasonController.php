@@ -28,29 +28,22 @@ class SeasonController extends VoyagerBaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     protected function combineTeams($season)
     {
+        $indexes = [1, 8, 6, 4, 3, 5, 7, 2];
         Game::query()->delete();
         $teams = $season->meta->groupBy('group');
-        $j = 0;
-        foreach ($teams as $teamGroup) {
-            $mid = count($teamGroup) / 2;
-            for ($i = 0; $i < count($teamGroup) / 4; $i++) {
-                Game::create([
+        foreach ($teams as $group => $teamGroup) {
+            $registry = [];
+            for ($i = 0; $i < count($teamGroup) / 2; $i++) {
+                $registry[] = Game::create([
                     'first_team_id' => $teamGroup[$i]->team->id,
                     'second_team_id' => $teamGroup[count($teamGroup) - $i - 1]->team->id,
                     'season_id' => $season->id,
-                    'type' => $j % 2 ? 'right' : 'left',
-                ]);
-                Game::create([
-                    'first_team_id' => $teamGroup[$mid - $i - 1]->team->id,
-                    'second_team_id' => $teamGroup[$mid + $i]->team->id,
-                    'season_id' => $season->id,
-                    'type' => $j % 2 ? 'right' : 'left',
+                    'type' => in_array($group, ['group_c', 'group_d']) ? 'right' : 'left',
+                    'group' => $group,
+                    'sort_index' => $indexes[$i],
                 ]);
             }
-
-            $j++;
         }
-
     }
 
     // POST BR(E)AD

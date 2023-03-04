@@ -14,6 +14,8 @@ class Game extends Model
         'second_team_id',
         'season_id',
         'type',
+        'group',
+        'sort_index',
     ];
 
     public function firstTeam()

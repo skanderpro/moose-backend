@@ -41,17 +41,28 @@ class ScoresController extends Controller
     {
         $season = Season::getActive();
         /** @var Collection $games */
-        $games = $season->games->groupBy('type');
+        $games = $season->games->groupBy('group');
         $guesses = Guess::getListForUser($season, Auth::user());
 
         $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
+
+//        dd($games['group_a']->sortBy('sort_index')->toArray());
+
+        $left = array_merge(
+            array_values($games['group_a']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values($games['group_b']->sortBy('sort_index')->map($teamMapper)->toArray())
+        );
+        $right = array_merge(
+            array_values($games['group_c']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values($games['group_d']->sortBy('sort_index')->map($teamMapper)->toArray())
+        );
 
         return view('scores', [
             'season' => $season,
             'guesses' => $guesses,
             'currentGuess' => $guess,
-            'games_left' => $games['left']->map($teamMapper)->toArray(),
-            'games_right' => $games['right']->map($teamMapper)->toArray(),
+            'games_left' => $left,
+            'games_right' => $right,
             'left' => $guess->getResults('left'),
             'right' => $guess->getResults('right'),
             'final' => $guess->getResults('final'),
