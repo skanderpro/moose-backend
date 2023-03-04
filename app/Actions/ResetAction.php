@@ -25,6 +25,7 @@ class ResetAction extends AbstractAction
     {
         return [
             'class' => 'btn btn-sm btn-primary pull-right',
+            'data-role' => 'reset-btn',
         ];
     }
 

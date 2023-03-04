@@ -46,15 +46,13 @@ class ScoresController extends Controller
 
         $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
 
-//        dd($games['group_a']->sortBy('sort_index')->toArray());
-
         $left = array_merge(
-            array_values($games['group_a']->sortBy('sort_index')->map($teamMapper)->toArray()),
-            array_values($games['group_b']->sortBy('sort_index')->map($teamMapper)->toArray())
+            array_values(empty($games['group_a']) ? [] : $games['group_a']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values(empty($games['group_b']) ? [] : $games['group_b']->sortBy('sort_index')->map($teamMapper)->toArray())
         );
         $right = array_merge(
-            array_values($games['group_c']->sortBy('sort_index')->map($teamMapper)->toArray()),
-            array_values($games['group_d']->sortBy('sort_index')->map($teamMapper)->toArray())
+            array_values(empty($games['group_c']) ? [] : $games['group_c']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values(empty($games['group_d']) ? [] : $games['group_d']->sortBy('sort_index')->map($teamMapper)->toArray())
         );
 
         return view('scores', [
