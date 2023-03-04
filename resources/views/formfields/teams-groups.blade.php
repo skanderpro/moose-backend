@@ -30,3 +30,8 @@
         </div>
     @endforeach
 </div>
+<script defer>
+    window.addEventListener('load', () => {
+        $('.teams-groups select').select2();
+    })
+</script>
