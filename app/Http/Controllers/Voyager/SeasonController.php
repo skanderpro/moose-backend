@@ -190,6 +190,9 @@ class SeasonController extends VoyagerBaseController
 
         $this->recalculateScores($season);
 
-        return back();
+        return back()->with([
+            'message'    => __('Reset successfully!'),
+            'alert-type' => 'success',
+        ]);
     }
 }

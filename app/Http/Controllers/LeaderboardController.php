@@ -12,7 +12,7 @@ class LeaderboardController extends Controller
 {
     public function index()
     {
-        $guesses = Guess::where('score', '>', 0)->with('user')->orderBy('score', 'desc')->get();
+        $guesses = Guess::where('score', '>', 0)->with('user')->orderBy('score', 'desc')->get()->groupBy('user_id');
 
         $avatars = [
             'Leo',

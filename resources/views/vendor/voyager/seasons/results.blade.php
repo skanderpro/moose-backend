@@ -66,11 +66,10 @@
                     method: 'post',
                     credentials: 'include',
                 }).then(() => {
-                    console.log('foo');
-                });
-
-
-                console.log('test');
+                    toastr.success('Results updated')
+                }).catch(() => {
+                    toastr.error('Results saving error')
+                })
             })
         })
 

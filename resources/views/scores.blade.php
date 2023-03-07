@@ -26,15 +26,15 @@
                 </div>
 
                 <div class="variants-list">
-                    <h3 class="g-title">Scores variants</h3>
+                    <h3 class="g-title">Create another bracket</h3>
                     <ul>
-                        @foreach($guesses as $guess)
+                        @foreach($guesses as $index => $guess)
                             <li>
                                 @if($guess->id == $currentGuess->id)
-                                    Variant from {{ $guess->created_at }}
+                                    Variant # {{ $index + 1 }}
                                 @else
                                     <a href="{{ route('scores.variant', ['guess' => $guess]) }}">
-                                        Variant from {{ $guess->created_at }}
+                                        Variant # {{ $index + 1 }}
                                     </a>
                                 @endif
                             </li>
@@ -44,7 +44,7 @@
                     @if(!NOW()->isAfter($season->start))
                         <form action="{{ route('scores.variant.create') }}" method="post">
                             @csrf
-                            <button type="submit">Create variant</button>
+                            <button type="submit">Create bracket</button>
                         </form>
                     @endif
                 </div>
