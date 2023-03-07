@@ -15,7 +15,9 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($guesses as $guess)
+                            @foreach($guesses as $guessArr)
+                            @foreach($guessArr as $index => $guess)
+
                                 <tr>
                                     <td>
                                         <img
@@ -23,10 +25,11 @@
                                             src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed={{ array_rand($avatars) }}"
                                             alt=""
                                         />
-                                    {{ $guess->user->name }} / variant from {{ $guess->created_at }}
+                                    {{ $guess->user->name }} / Variant # {{ $index + 1 }}
                                     </td>
                                     <td>{{ $guess->score }}</td>
                                 </tr>
+                            @endforeach
                             @endforeach
 
                             </tbody>
