@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ResultsMail;
 use App\Models\Game;
 use App\Models\Guess;
 use App\Models\Season;
@@ -16,6 +17,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use TCG\Voyager\Events\BreadDataAdded;
@@ -167,6 +169,8 @@ class SeasonController extends VoyagerBaseController
         foreach ($guesses as $guess) {
             $guess->calculateScore($season);
             $guess->user->recalculateScore();
+
+            Mail::to($guess->user->email)->send(new ResultsMail($guess->user));
         }
     }
 
