@@ -188,6 +188,8 @@ class SeasonController extends VoyagerBaseController
         $season->results_final = '[]';
         $season->save();
 
+        SeasonTeam::where('season_id', $season->id)->delete();
+
         Guess::removeSeason($season);
 
         $this->combineTeams($season);
