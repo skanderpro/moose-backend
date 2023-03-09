@@ -8,7 +8,7 @@ class ResetAction extends AbstractAction
 {
     public function getTitle()
     {
-        return 'Reset';
+        return 'Reset season';
     }
 
     public function getIcon()
@@ -25,6 +25,7 @@ class ResetAction extends AbstractAction
     {
         return [
             'class' => 'btn btn-sm btn-primary pull-right',
+            'style' => 'margin: 5px 10px;',
             'data-role' => 'reset-btn',
         ];
     }

@@ -25,6 +25,7 @@ class ResultAction extends AbstractAction
     {
         return [
             'class' => 'btn btn-sm btn-primary pull-right',
+            'style' => 'margin: 5px 10px;'
         ];
     }
 

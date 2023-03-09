@@ -8,7 +8,7 @@ class ResetTeamsAction extends AbstractAction
 {
     public function getTitle()
     {
-        return 'Reset team';
+        return 'Reset teams';
     }
 
     public function getIcon()
