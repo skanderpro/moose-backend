@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\ResetAction;
+use App\Actions\ResetTeamsAction;
 use App\Actions\ResultAction;
 use App\FormFields\TeamsGroups;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Voyager::addAction(ResultAction::class);
         Voyager::addAction(ResetAction::class);
+        Voyager::addAction(ResetTeamsAction::class);
         Voyager::addFormField(TeamsGroups::class);
     }
 }
