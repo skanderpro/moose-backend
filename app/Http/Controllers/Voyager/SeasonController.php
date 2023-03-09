@@ -90,7 +90,9 @@ class SeasonController extends VoyagerBaseController
         $sts = $request->get('teams_groups');
         $registry = [];
         foreach ($sts as $group => $ids) {
-            if (!empty(array_intersect($registry, $ids)) || count($ids) !== count(array_unique($ids))) {
+            $filteredIds = array_filter($ids, fn($id) => !empty($id));
+
+            if (!empty(array_intersect($registry, $filteredIds)) || count($filteredIds) !== count(array_unique($filteredIds))) {
                 return back()->with([
                     'message'    => 'You have duplicates in teams list in "'.str_replace('_', ' ', $group).'"',
                     'alert-type' => 'error',
@@ -103,6 +105,10 @@ class SeasonController extends VoyagerBaseController
         SeasonTeam::query()->delete();
         foreach ($sts as $group => $ids) {
             foreach ($ids as $rating => $id) {
+                if (empty($id)) {
+                    continue;
+                }
+
                 SeasonTeam::create([
                     'team_id' => $id,
                     'season_id' => $data->id,
