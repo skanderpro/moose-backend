@@ -87,9 +87,20 @@ class SeasonController extends VoyagerBaseController
         // Delete Images
         $this->deleteBreadImages($original_data, $to_remove);
 
-        SeasonTeam::query()->delete();
         $sts = $request->get('teams_groups');
+        $registry = [];
+        foreach ($sts as $group => $ids) {
+            if (!empty(array_intersect($registry, $ids)) || count($ids) !== count(array_unique($ids))) {
+                return back()->with([
+                    'message'    => 'You have duplicates in teams list in "'.str_replace('_', ' ', $group).'"',
+                    'alert-type' => 'error',
+                ]);
+            }
 
+            $registry = array_merge($registry, $ids);
+        }
+
+        SeasonTeam::query()->delete();
         foreach ($sts as $group => $ids) {
             foreach ($ids as $rating => $id) {
                 SeasonTeam::create([
@@ -100,8 +111,6 @@ class SeasonController extends VoyagerBaseController
                 ]);
             }
         }
-
-
 
         event(new BreadDataUpdated($dataType, $data));
 
@@ -188,13 +197,21 @@ class SeasonController extends VoyagerBaseController
         $season->results_final = '[]';
         $season->save();
 
-        SeasonTeam::where('season_id', $season->id)->delete();
-
         Guess::removeSeason($season);
 
         $this->combineTeams($season);
 
         $this->recalculateScores($season);
+
+        return back()->with([
+            'message'    => __('Reset successfully!'),
+            'alert-type' => 'success',
+        ]);
+    }
+
+    public function resetSeasonTeams(Season $season)
+    {
+        SeasonTeam::where('season_id', $season->id)->delete();
 
         return back()->with([
             'message'    => __('Reset successfully!'),
