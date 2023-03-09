@@ -6,6 +6,7 @@
         for ($i = 0; $i < 16; $i++) {
             @endphp
             <select name="teams_groups[{{ $key }}][]" >
+                <option value="">-</option>
                 @php
                     foreach($tms as $tm) {
                         @endphp
@@ -32,6 +33,20 @@
 </div>
 <script defer>
     window.addEventListener('load', () => {
-        $('.teams-groups select').select2();
-    })
+        const registry = {!! json_encode($registry) !!};
+        const $select2 = $('.teams-groups select').select2();
+        $select2.on('change', event => {
+            const $select = $(event.target);
+            const val = $select.val();
+            if (!`${val}`.trim().length) {
+                return;
+            } else if (registry[val]) {
+                $select.val('');
+                toastr.error('you have duplicates in your team list');
+                $select.trigger('change');
+            }
+
+            registry[val] = true;
+        });
+    });
 </script>

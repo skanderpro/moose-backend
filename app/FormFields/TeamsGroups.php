@@ -33,11 +33,13 @@ class TeamsGroups extends AbstractHandler
 
         $teams = Team::all();
 
+        $registry = [];
         $values = SeasonTeam::all()->groupBy('group')->toArray();
         foreach ($values as $group => $value) {
             $_v = [];
             foreach ($value as $st) {
                 $_v[$st['rating'] - 1] = $st['team_id'];
+                $registry[$st['team_id']] = 1;
             }
             $values[$group] = $_v;
         }
@@ -49,7 +51,8 @@ class TeamsGroups extends AbstractHandler
             'groups' => $groups,
             'options' => $options,
             'dataType' => $dataType,
-            'dataTypeContent' => $dataTypeContent
+            'dataTypeContent' => $dataTypeContent,
+            'registry' => $registry,
         ]);
     }
 }
