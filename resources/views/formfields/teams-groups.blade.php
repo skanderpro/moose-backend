@@ -33,23 +33,48 @@
 </div>
 <script defer>
     window.addEventListener('load', () => {
-        const registry = {!! json_encode($registry) !!};
-        const $selects = $('.teams-groups select');
-        const $select2 = $selects.select2();
-        $select2.on('change', event => {
+        const submit = document.querySelector('.teams-groups').closest('form').querySelector('[type="submit"]');
+
+        function selectChangeHandler(event) {
             $('.select2-selection').removeClass('invalid');
+            submit.disabled = false;
 
-            const $select = $(event.target);
-            const val = $select.val();
-            if (!`${val}`.trim().length) {
-                return;
-            } else if (registry[val]) {
+            const id = event.target.dataset.select2Id;
+            const val = registry[id].select2.val();
+            registry[id].val = val;
+
+            let isInvalid = false;
+
+            Object.values(registry).forEach((regItem) => {
+                Object.values(registry).forEach((innerRegItem) => {
+                    if (innerRegItem.val === regItem.val && innerRegItem.id !== regItem.id && innerRegItem.val.length) {
+                        isInvalid = true;
+                        $(regItem.select.nextElementSibling).find('.select2-selection').addClass('invalid');
+                        $(innerRegItem.select.nextElementSibling).find('.select2-selection').addClass('invalid');
+                    }
+                });
+            });
+
+            if (isInvalid) {
+                submit.disabled = true;
                 toastr.error('you have duplicates in your team list');
-                $(event.target.nextElementSibling).find('.select2-selection').addClass('invalid');
             }
+        }
 
-            registry[val] = true;
-        });
+        const registry = Array.from(document.querySelectorAll('.teams-groups select')).reduce((acc, select) => {
+            const $select = $(select);
+            $select.on('change', selectChangeHandler);
+            const regItem = {
+                select,
+                select2: $select.select2(),
+                val: $select.val(),
+                id: select.dataset.select2Id,
+            };
+
+            acc[regItem.id] = regItem;
+
+            return acc;
+        }, {});
     });
 </script>
 
