@@ -34,19 +34,27 @@
 <script defer>
     window.addEventListener('load', () => {
         const registry = {!! json_encode($registry) !!};
-        const $select2 = $('.teams-groups select').select2();
+        const $selects = $('.teams-groups select');
+        const $select2 = $selects.select2();
         $select2.on('change', event => {
+            $('.select2-selection').removeClass('invalid');
+
             const $select = $(event.target);
             const val = $select.val();
             if (!`${val}`.trim().length) {
                 return;
             } else if (registry[val]) {
-                $select.val('');
                 toastr.error('you have duplicates in your team list');
-                $select.trigger('change');
+                $(event.target.nextElementSibling).find('.select2-selection').addClass('invalid');
             }
 
             registry[val] = true;
         });
     });
 </script>
+
+<style>
+    .invalid {
+        border-color: red !important;
+    }
+</style>
