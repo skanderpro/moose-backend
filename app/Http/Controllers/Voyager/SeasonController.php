@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\CalculateScore;
 use App\Mail\ResultsMail;
 use App\Models\Game;
 use App\Models\Guess;
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -28,6 +30,7 @@ use TCG\Voyager\Http\Controllers\VoyagerBaseController;
 class SeasonController extends VoyagerBaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
     protected function combineTeams($season)
     {
         $indexes = [1, 8, 6, 4, 3, 5, 7, 2];
@@ -60,7 +63,7 @@ class SeasonController extends VoyagerBaseController
 
         $model = app($dataType->model_name);
         $query = $model->query();
-        if ($dataType->scope && $dataType->scope != '' && method_exists($model, 'scope'.ucfirst($dataType->scope))) {
+        if ($dataType->scope && $dataType->scope != '' && method_exists($model, 'scope' . ucfirst($dataType->scope))) {
             $query = $query->{$dataType->scope}();
         }
         if ($model && in_array(SoftDeletes::class, class_uses_recursive($model))) {
@@ -94,7 +97,7 @@ class SeasonController extends VoyagerBaseController
 
             if (!empty(array_intersect($registry, $filteredIds)) || count($filteredIds) !== count(array_unique($filteredIds))) {
                 return back()->with([
-                    'message'    => 'You have duplicates in teams list in "'.str_replace('_', ' ', $group).'"',
+                    'message' => 'You have duplicates in teams list in "' . str_replace('_', ' ', $group) . '"',
                     'alert-type' => 'error',
                 ]);
             }
@@ -127,7 +130,7 @@ class SeasonController extends VoyagerBaseController
         }
 
         return $redirect->with([
-            'message'    => __('voyager::generic.successfully_updated')." {$dataType->getTranslatedAttribute('display_name_singular')}",
+            'message' => __('voyager::generic.successfully_updated') . " {$dataType->getTranslatedAttribute('display_name_singular')}",
             'alert-type' => 'success',
         ]);
     }
@@ -179,14 +182,7 @@ class SeasonController extends VoyagerBaseController
 
     protected function recalculateScores(Season $season)
     {
-        $guesses = $season->guesses;
-
-        foreach ($guesses as $guess) {
-            $guess->calculateScore($season);
-            $guess->user->recalculateScore();
-
-            Mail::to($guess->user->email)->send(new ResultsMail($guess->user));
-        }
+        CalculateScore::dispatch();
     }
 
     public function runRecalculateJob(Season $season)
@@ -210,7 +206,7 @@ class SeasonController extends VoyagerBaseController
         $this->recalculateScores($season);
 
         return back()->with([
-            'message'    => __('Reset successfully!'),
+            'message' => __('Reset successfully!'),
             'alert-type' => 'success',
         ]);
     }
@@ -220,7 +216,7 @@ class SeasonController extends VoyagerBaseController
         SeasonTeam::where('season_id', $season->id)->delete();
 
         return back()->with([
-            'message'    => __('Reset successfully!'),
+            'message' => __('Reset successfully!'),
             'alert-type' => 'success',
         ]);
     }
