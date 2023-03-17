@@ -17,6 +17,7 @@ class Guess extends Model
         'results_right',
         'results_final',
         'score',
+        'title',
     ];
 
     public function user()

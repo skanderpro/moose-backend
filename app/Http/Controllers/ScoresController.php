@@ -77,6 +77,7 @@ class ScoresController extends Controller
             $payload = Validator::make($request->request->all(), [
                 'type' => 'required|in:left,right,final',
                 'results' => 'required|array',
+                'title' => 'Variant #' .(Auth::user()->guesses()->count() + 1),
             ])->validate();
 
             $guess->{"results_" . trim($payload['type'])} = json_encode($payload['results']);
