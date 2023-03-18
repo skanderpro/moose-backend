@@ -37,7 +37,7 @@ class Guess extends Model
             $json = [];
         }
 
-        return $json;
+        return $json[0] ?? [];
     }
 
     public static function getForUser(Season $season, User $user)
@@ -83,6 +83,7 @@ class Guess extends Model
         $guessFinal = $this->getResults('final');
         $games = $season->games->groupBy('type');
         $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
+        $teamMapper2 = fn($game) => [$game->first_team_id, $game->second_team_id];
         $games_left = $games['left']->map($teamMapper)->toArray();
         $games_right = $games['right']->map($teamMapper)->toArray();
 
@@ -90,33 +91,31 @@ class Guess extends Model
         foreach ($left as $level => $levelGames) {
             $gamesRegistry = [];
 
-            foreach ($levelGames as $gameIndex => $games) {
-                foreach ($games as $resultIndex => $result) {
-                    $guessResult = $guessLeft[$level][$gameIndex][$resultIndex] ?? [null, null];
-                    $teams = $games_left[$gameIndex];
-                    $winner = $result[0] > $result[1] ? $teams[0] : $teams[1];
-                    $rating = $winner->rating;
-                    $lastItemIndex = count($gamesRegistry) - 1;
+            foreach ($levelGames as $resultIndex => $result) {
+                $guessResult = $guessLeft[$level][$resultIndex] ?? [null, null];
+                $teams = $games_left[$resultIndex];
+                $winner = $result[0] > $result[1] ? $teams[0] : $teams[1];
+                $rating = $winner->rating;
+                $lastItemIndex = count($gamesRegistry) - 1;
 
-                    if ($lastItemIndex > -1 && count($gamesRegistry[$lastItemIndex]) == 1) {
-                        $gamesRegistry[$lastItemIndex][] = $winner;
-                    } else {
-                        $gamesRegistry[] = [$winner];
-                    }
+                if ($lastItemIndex > -1 && count($gamesRegistry[$lastItemIndex]) == 1) {
+                    $gamesRegistry[$lastItemIndex][] = $winner;
+                } else {
+                    $gamesRegistry[] = [$winner];
+                }
 
-                    if (
-                        $guessResult[0] === null ||
-                        $guessResult[1] === null ||
-                        $result[0] === null ||
-                        $result[1] === null
-                    ) {
-                        continue;
-                    } elseif (
-                        $guessResult[0] == $result[0] &&
-                        $guessResult[1] == $result[1]
-                    ) {
-                        $score += $this->calculateGuessScore($rating, $level);
-                    }
+                if (
+                    $guessResult[0] === null ||
+                    $guessResult[1] === null ||
+                    $result[0] === null ||
+                    $result[1] === null
+                ) {
+                    continue;
+                } elseif (
+                    $guessResult[0] == $result[0] &&
+                    $guessResult[1] == $result[1]
+                ) {
+                    $score += $this->calculateGuessScore($rating, $level);
                 }
             }
         }
@@ -125,33 +124,31 @@ class Guess extends Model
         foreach ($right as $level => $levelGames) {
             $gamesRegistry = [];
 
-            foreach ($levelGames as $gameIndex => $games) {
-                foreach ($games as $resultIndex => $result) {
-                    $guessResult = $guessRight[$level][$gameIndex][$resultIndex] ?? [null, null];
-                    $teams = $games_right[$gameIndex];
-                    $winner = $result[0] > $result[1] ? $teams[0] : $teams[1];
-                    $rating = $winner->rating;
-                    $lastItemIndex = count($gamesRegistry) - 1;
+            foreach ($levelGames as $resultIndex => $result) {
+                $guessResult = $guessRight[$level][$resultIndex] ?? [null, null];
+                $teams = $games_right[$resultIndex];
+                $winner = $result[0] > $result[1] ? $teams[0] : $teams[1];
+                $rating = $winner->rating;
+                $lastItemIndex = count($gamesRegistry) - 1;
 
-                    if ($lastItemIndex > -1 && count($gamesRegistry[$lastItemIndex]) == 1) {
-                        $gamesRegistry[$lastItemIndex][] = $winner;
-                    } else {
-                        $gamesRegistry[] = [$winner];
-                    }
+                if ($lastItemIndex > -1 && count($gamesRegistry[$lastItemIndex]) == 1) {
+                    $gamesRegistry[$lastItemIndex][] = $winner;
+                } else {
+                    $gamesRegistry[] = [$winner];
+                }
 
-                    if (
-                        $guessResult[0] === null ||
-                        $guessResult[1] === null ||
-                        $result[0] === null ||
-                        $result[1] === null
-                    ) {
-                        continue;
-                    } elseif (
-                        $guessResult[0] == $result[0] &&
-                        $guessResult[1] == $result[1]
-                    ) {
-                        $score += $this->calculateGuessScore($rating, $level);
-                    }
+                if (
+                    $guessResult[0] === null ||
+                    $guessResult[1] === null ||
+                    $result[0] === null ||
+                    $result[1] === null
+                ) {
+                    continue;
+                } elseif (
+                    $guessResult[0] == $result[0] &&
+                    $guessResult[1] == $result[1]
+                ) {
+                    $score += $this->calculateGuessScore($rating, $level);
                 }
             }
 
