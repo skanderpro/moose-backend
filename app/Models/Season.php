@@ -50,7 +50,7 @@ class Season extends Model
             $json = [];
         }
 
-        return $json;
+        return $json[0] ?? [];
     }
 
     public function meta()
