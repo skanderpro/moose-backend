@@ -81,11 +81,17 @@ class Guess extends Model
         $guessLeft = $this->getResults('left');
         $guessRight = $this->getResults('right');
         $guessFinal = $this->getResults('final');
-        $games = $season->games->groupBy('type');
+        $games = $season->games->groupBy('group');
         $teamMapper = fn($game) => [Team::findForSeason($game->first_team_id, $season), Team::findForSeason($game->second_team_id, $season)];
-        $teamMapper2 = fn($game) => [$game->first_team_id, $game->second_team_id];
-        $games_left = $games['left']->map($teamMapper)->toArray();
-        $games_right = $games['right']->map($teamMapper)->toArray();
+
+        $games_left = array_merge(
+            array_values(empty($games['group_a']) ? [] : $games['group_a']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values(empty($games['group_b']) ? [] : $games['group_b']->sortBy('sort_index')->map($teamMapper)->toArray())
+        );
+        $games_right = array_merge(
+            array_values(empty($games['group_c']) ? [] : $games['group_c']->sortBy('sort_index')->map($teamMapper)->toArray()),
+            array_values(empty($games['group_d']) ? [] : $games['group_d']->sortBy('sort_index')->map($teamMapper)->toArray())
+        );
 
         // left games
         foreach ($left as $level => $levelGames) {
