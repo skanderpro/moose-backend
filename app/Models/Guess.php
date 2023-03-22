@@ -124,6 +124,8 @@ class Guess extends Model
                     $score += $this->calculateGuessScore($rating, $level);
                 }
             }
+
+            $games_left = $gamesRegistry;
         }
 
         // right games
