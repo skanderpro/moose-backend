@@ -93,28 +93,53 @@ class Guess extends Model
             array_values(empty($games['group_d']) ? [] : $games['group_d']->sortBy('sort_index')->map($teamMapper)->toArray())
         );
 
+
+        $gamesRegistry = [
+            $games_left,
+        ];
+        $guessGamesRegistry = [
+            $games_left,
+        ];
+
         // left games
         foreach ($left as $level => $levelGames) {
-            $gamesRegistry = [];
+            if (empty($gamesRegistry[$level + 1])) {
+                $gamesRegistry[$level + 1] = [];
+            }
+
+            if (empty($guessGamesRegistry[$level + 1])) {
+                $guessGamesRegistry[$level + 1] = [];
+            }
 
             foreach ($levelGames as $resultIndex => $result) {
                 $guessResult = $guessLeft[$level][$resultIndex] ?? [null, null];
-                $teams = $games_left[$resultIndex];
+                $teams = $gamesRegistry[$level][$resultIndex];
+                $guessTeams = $guessGamesRegistry[$level][$resultIndex];
                 $winner = $result[0] > $result[1] ? $teams[0] : $teams[1];
+                $guessWinner = $guessResult[0] > $guessResult[1] ? $guessTeams[0] : $guessTeams[1];
                 $rating = $winner->rating;
-                $lastItemIndex = count($gamesRegistry) - 1;
+                $lastItemIndex = count($gamesRegistry[$level + 1]) - 1;
 
-                if ($lastItemIndex > -1 && count($gamesRegistry[$lastItemIndex]) == 1) {
-                    $gamesRegistry[$lastItemIndex][] = $winner;
+                if ($lastItemIndex > -1 && count($gamesRegistry[$level + 1][$lastItemIndex]) == 1) {
+                    $gamesRegistry[$level + 1][$lastItemIndex][] = $winner;
                 } else {
-                    $gamesRegistry[] = [$winner];
+                    $gamesRegistry[$level + 1][] = [$winner];
+                }
+
+                $lastGuessItemIndex = count($guessGamesRegistry[$level + 1]) - 1;
+
+                if ($lastGuessItemIndex > -1 && count($guessGamesRegistry[$level + 1][$lastGuessItemIndex]) == 1) {
+                    $guessGamesRegistry[$level + 1][$lastGuessItemIndex][] = $guessWinner;
+                } else {
+                    $guessGamesRegistry[$level + 1][] = [$guessWinner];
                 }
 
                 if (
                     $guessResult[0] === null ||
                     $guessResult[1] === null ||
                     $result[0] === null ||
-                    $result[1] === null
+                    $result[1] === null ||
+                    $winner->id !== $guessWinner->id
                 ) {
                     continue;
                 } elseif (
@@ -124,32 +149,54 @@ class Guess extends Model
                     $score += $this->calculateGuessScore($rating, $level);
                 }
             }
-
-            $games_left = $gamesRegistry;
         }
+
+        $gamesRegistry = [
+            $games_right,
+        ];
+        $guessGamesRegistry = [
+            $games_right,
+        ];
 
         // right games
         foreach ($right as $level => $levelGames) {
-            $gamesRegistry = [];
+            if (empty($gamesRegistry[$level + 1])) {
+                $gamesRegistry[$level + 1] = [];
+            }
+
+            if (empty($guessGamesRegistry[$level + 1])) {
+                $guessGamesRegistry[$level + 1] = [];
+            }
 
             foreach ($levelGames as $resultIndex => $result) {
                 $guessResult = $guessRight[$level][$resultIndex] ?? [null, null];
-                $teams = $games_right[$resultIndex];
+                $teams = $gamesRegistry[$level][$resultIndex];
+                $guessTeams = $guessGamesRegistry[$level][$resultIndex];
                 $winner = $result[0] > $result[1] ? $teams[0] : $teams[1];
+                $guessWinner = $guessResult[0] > $guessResult[1] ? $guessTeams[0] : $guessTeams[1];
                 $rating = $winner->rating;
-                $lastItemIndex = count($gamesRegistry) - 1;
+                $lastItemIndex = count($gamesRegistry[$level + 1]) - 1;
 
-                if ($lastItemIndex > -1 && count($gamesRegistry[$lastItemIndex]) == 1) {
-                    $gamesRegistry[$lastItemIndex][] = $winner;
+                if ($lastItemIndex > -1 && count($gamesRegistry[$level + 1][$lastItemIndex]) == 1) {
+                    $gamesRegistry[$level + 1][$lastItemIndex][] = $winner;
                 } else {
-                    $gamesRegistry[] = [$winner];
+                    $gamesRegistry[$level + 1][] = [$winner];
+                }
+
+                $lastGuessItemIndex = count($guessGamesRegistry[$level + 1]) - 1;
+
+                if ($lastGuessItemIndex > -1 && count($guessGamesRegistry[$level + 1][$lastGuessItemIndex]) == 1) {
+                    $guessGamesRegistry[$level + 1][$lastGuessItemIndex][] = $guessWinner;
+                } else {
+                    $guessGamesRegistry[$level + 1][] = [$guessWinner];
                 }
 
                 if (
                     $guessResult[0] === null ||
                     $guessResult[1] === null ||
                     $result[0] === null ||
-                    $result[1] === null
+                    $result[1] === null ||
+                    $winner->id !== $guessWinner->id
                 ) {
                     continue;
                 } elseif (

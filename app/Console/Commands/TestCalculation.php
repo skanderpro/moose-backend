@@ -33,6 +33,7 @@ class TestCalculation extends Command
         $season = Season::first();
         /** @var Guess $guess */
         $guess = Guess::where('user_id', 96)->first();
+//        $guess = Guess::where('user_id', 1)->first();
         $guess->calculateScore($season);
 
         return Command::SUCCESS;
