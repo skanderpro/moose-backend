@@ -214,6 +214,7 @@ class Guess extends Model
         $rightTeamTree = $gamesRegistry;
         $rightGuessTeamTree = $guessGamesRegistry;
 
+        // check half final
         if (
             // check fact
             !empty($leftTeamTree[4][0][0]) &&
@@ -232,6 +233,30 @@ class Guess extends Model
             $rightTeamTree[4][0][1]->id == $rightGuessTeamTree[4][0][1]->id
         ) {
             $score += 30;
+        }
+
+        // check final
+        if (
+            // check fact
+            !empty($leftTeamTree[5][0][0]) &&
+            !empty($rightTeamTree[5][0][0]) &&
+            // check guess
+            !empty($leftGuessTeamTree[5][0][0]) &&
+            !empty($rightGuessTeamTree[5][0][0]) &&
+            // check winners
+            $leftTeamTree[5][0][0]->id == $leftGuessTeamTree[5][0][0]->id &&
+            $rightTeamTree[5][0][0]->id == $rightGuessTeamTree[5][0][0]->id &&
+            // check results
+            !empty($final[0][0][0]) &&
+            !empty($final[0][0][1]) &&
+            !empty($guessFinal[0][0][0]) &&
+            !empty($guessFinal[0][0][1]) &&
+            $final[0][0][0] == $guessFinal[0][0][0] &&
+            $final[0][0][1] == $guessFinal[0][0][1]
+        ) {
+            $finalWinner = $final[0][0][0] > $final[0][0][1] ? $leftTeamTree[5][0][0]->rating : $rightTeamTree[5][0][0]->rating;
+
+            $score += $this->calculateGuessScore($finalWinner, 5);
         }
 
         $this->score = $score;
