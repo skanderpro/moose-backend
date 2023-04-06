@@ -138,15 +138,21 @@
 
         /*for flag*/
         /* Edit function is called when team label is clicked */
-        function edit_fn($container, data, doneCb) {
-            const $team = $container.closest('.team');
-            const $opponent = $team.prev('.team').length ? $team.prev('.team') : $team.next('.team');
-            const $teamScore = $team.find('.score').data('resultid');
-            const $wrapper = $team.closest('.jQBracket');
+        function edit_fn(context) {
+            return ($container, data, doneCb) => {
+                const $team = $container.closest('.team');
+                const $opponent = $team.prev('.team').length ? $team.prev('.team') : $team.next('.team');
+                const $teamScore = $team.find('.score').data('resultid');
+                const $wrapper = $team.closest('.jQBracket');
 
-            triggerNewScore($opponent, 0, 'opponent')
-                .then(() => triggerNewScore($wrapper.find('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'))
-                .then(() => renderFinal());
+                triggerNewScore($opponent, 0, 'opponent')
+                    .then(() => triggerNewScore($wrapper.find('[data-resultid="' + $teamScore + '"]').closest('.team'), 1, 'team'))
+                    .then(() => {
+                        if (context !== 'final') {
+                            return renderFinal();
+                        }
+                    });
+            };
         }
 
         /* Render function is called for each team label when data is changed, data
@@ -191,7 +197,7 @@
                 init: saveData,
                 save: userId ? save('left') : undefined,
                 decorator: {
-                    edit: edit_fn,
+                    edit: edit_fn('left'),
                     render: render_fn
                 },
             });
@@ -208,7 +214,7 @@
                 init: saveData1,
                 save: userId ? save('right') : undefined,
                 decorator: {
-                    edit: edit_fn,
+                    edit: edit_fn('right'),
                     render: render_fn
                 },
             });
@@ -221,7 +227,6 @@
                 const leftTeam = leftWinner && teamsRegistry[+leftWinner.dataset.team] ? teamsRegistry[+leftWinner.dataset.team] : null;
                 const rightTeam = rightWinner && teamsRegistry[+rightWinner.dataset.team] ? teamsRegistry[+rightWinner.dataset.team] : null;
 
-                console.log('l-r', leftTeam, rightTeam);
 
                 setTimeout(() => {
                     $final.bracket({
@@ -239,7 +244,7 @@
                         },
                         save: userId ? save('final') : undefined,
                         decorator: {
-                            edit: edit_fn,
+                            edit: edit_fn('final'),
                             render: render_fn
                         },
                     });
