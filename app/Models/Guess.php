@@ -247,10 +247,10 @@ class Guess extends Model
             $leftTeamTree[5][0][0]->id == $leftGuessTeamTree[5][0][0]->id &&
             $rightTeamTree[5][0][0]->id == $rightGuessTeamTree[5][0][0]->id &&
             // check results
-            !empty($final[0][0][0]) &&
-            !empty($final[0][0][1]) &&
-            !empty($guessFinal[0][0][0]) &&
-            !empty($guessFinal[0][0][1]) &&
+            isset($final[0][0][0]) &&
+            isset($final[0][0][1]) &&
+            isset($guessFinal[0][0][0]) &&
+            isset($guessFinal[0][0][1]) &&
             $final[0][0][0] == $guessFinal[0][0][0] &&
             $final[0][0][1] == $guessFinal[0][0][1]
         ) {
