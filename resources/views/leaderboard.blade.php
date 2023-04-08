@@ -17,7 +17,7 @@
                             <tbody>
                             @foreach($guesses as $index => $guess)
 
-                                <tr>
+                                <tr data-id="{{ $guess->id }}">
                                     <td>
                                         <img
                                             class="leaderboard__inner-list-img"
